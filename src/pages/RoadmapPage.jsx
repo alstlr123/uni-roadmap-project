@@ -12,20 +12,20 @@ import ReactFlow, {
 import 'reactflow/dist/style.css';
 import ELK from 'elkjs/lib/elk.bundled.js'; // 그래프 자동 배치 라이브러리
 
-// =======================================================
-// [0. MOCK DATA & CONFIGURATION]
-// =======================================================
 
-// -------------------------------------------------------
+// [0. MOCK DATA & CONFIGURATION]
+
+
+
 // MOCK DATA (사용자 제공) - 코드를 실행하기 위해 내부에 통합
-// -------------------------------------------------------
+
 const UNIVERSITIES = [
     {
         id: "hansung",
         name: "한성대학교",
         tracks: [
-            // ... (Mock Data의 웹 공학, 모바일 SW, 빅데이터 트랙 데이터)
-            // Note: 실제 코드를 간결하게 하기 위해 'web' 트랙만 상세히 포함합니다.
+            // Mock Data의 웹 공학, 모바일 SW, 빅데이터 트랙 데이타
+            // 실제 코드를 간결하게 하기 위해 'web' 트랙만 상세히 포함
             {
                 id: "web",
                 name: "웹공학 트랙",
@@ -49,28 +49,23 @@ const UNIVERSITIES = [
     { id: "korea", name: "한국대학교", tracks: [] }
 ];
 
-// -------------------------------------------------------
 // 상수 설정
-// -------------------------------------------------------
 const INITIAL_UNIVERSITY_ID = "hansung";
 const INITIAL_TRACK_ID = "web";
 
 const CATEGORY_STYLES = {
-    // 이미지의 색상과 유사하게 설정
-    basic: { bg: '#FFF8E1', border: '#FFD54F' },        // 노란색 (기초)
-    common: { bg: '#FBE9E7', border: '#FF8A65' },       // 주황색 (공통)
-    required: { bg: '#E3F2FD', border: '#42A5F5' },     // 파란색 (선택필수)
-    major_required: { bg: '#FCE4EC', border: '#EC407A' }, // 분홍색 (트랙필수/심화)
-    capstone: { bg: '#FFEBEA', border: '#E57373' }      // 빨간색 (캡스톤)
+    basic: { bg: '#FFF8E1', border: '#FFD54F' },        // 노란색 
+    common: { bg: '#FBE9E7', border: '#FF8A65' },       // 주황색 
+    required: { bg: '#E3F2FD', border: '#42A5F5' },     // 파란색 
+    major_required: { bg: '#FCE4EC', border: '#EC407A' }, // 분홍색 
+    capstone: { bg: '#FFEBEA', border: '#E57373' }      // 빨간색 
 };
 const PROGRESS_MOCK_DATA = { 
     system: 20, web: 29, mobile: 25, ai: 20, data: 40, network: 17, graphics: 25, 
     'ai_track': 20, 'game_track': 17 
 };
 
-// =======================================================
 // [1. UTILITY FUNCTIONS]
-// =======================================================
 
 // ELK 레이아웃 계산기 초기화
 const elk = new ELK();
@@ -103,7 +98,7 @@ const getLayoutedElements = async (courses) => {
             type: 'courseNode' 
         });
 
-        // 엣지 생성 (선수 과목 연결)
+        // 선수 과목 연결
         course.prereqs.forEach((prereqId, index) => {
             edges.push({
                 id: `e-${prereqId}-${course.id}-${index}`,
@@ -121,7 +116,7 @@ const getLayoutedElements = async (courses) => {
         'elk.algorithm': 'layered',
         'elk.direction': 'RIGHT', // 왼쪽(학년)에서 오른쪽으로 흐름
         'elk.spacing.nodeNode': '60', // 노드 간 간격
-        'elk.spacing.nodeNodeBetweenLayers': '100', // 레이어 간 간격 (가로 간격)
+        'elk.spacing.nodeNodeBetweenLayers': '100', // 레이어 간 간격 
         'elk.layered.layering.strategy': 'LONGEST_PATH',
     };
 
@@ -152,9 +147,8 @@ const getLayoutedElements = async (courses) => {
     }
 };
 
-// -------------------------------------------------------
 // 커스텀 노드 컴포넌트 (이미지의 과목 박스 디자인)
-// -------------------------------------------------------
+
 const CustomCourseNode = ({ data }) => {
     const { courseData } = data;
     const styles = CATEGORY_STYLES[courseData.category];
@@ -205,9 +199,8 @@ const CustomCourseNode = ({ data }) => {
     );
 };
 
-// =======================================================
-// [2. INTEGRATED COMPONENTS]
-// =======================================================
+
+//[2. INTEGRATED COMPONENTS]
 
 const IntegratedRoadmapVisualization = ({ selectedTrack, onNodeClick }) => {
     const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -215,7 +208,7 @@ const IntegratedRoadmapVisualization = ({ selectedTrack, onNodeClick }) => {
 
     const courses = selectedTrack?.courses || [];
     
-    // 1. 노드 및 엣지 데이터 준비 및 레이아웃 계산 (비동기)
+    // 1. 노드 및 엣지 데이터 준비 및 레이아웃 계산 
     useEffect(() => {
         if (courses.length === 0) {
             setNodes([]);
@@ -273,9 +266,9 @@ const MockSidebar = ({ selectedCourse }) => (
     </div>
 );
 
-// =======================================================
+
 // [3. MAIN COMPONENT] RoadmapPage
-// =======================================================
+
 export default function RoadmapPage() {
     // 1. Context, Hook 데이터 대체 (정적 Mock 값 사용)
     const currentUni = UNIVERSITIES.find(u => u.id === INITIAL_UNIVERSITY_ID);
@@ -393,9 +386,9 @@ export default function RoadmapPage() {
     );
 }
 
-// =======================================================
+
 // [4. Styling] (이미지 UI 기반)
-// =======================================================
+
 const styles = {
     pageContainer: { fontFamily: 'sans-serif', minHeight: '100vh', backgroundColor: '#fff', padding: '0 20px', display: 'flex', flexDirection: 'column' },
     header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #eee' },
