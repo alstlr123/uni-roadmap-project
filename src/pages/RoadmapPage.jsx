@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect, useContext } from 'react';
-import { ChevronLeft, BarChart2, Home, Zap, CornerRightDown, Clock, Search } from 'lucide-react'; 
+import { ChevronLeft, BarChart2, Home, Zap, CornerRightDown, Clock, Search, BookOpen, Monitor, Briefcase } from 'lucide-react'; 
 import ReactFlow, { 
     Controls, 
     Background, 
@@ -33,16 +33,16 @@ const UNIVERSITIES = [
                 id: "web",
                 name: "웹공학 트랙",
                 courses: [
-                    { id: "TR_B01", title: "컴퓨터프로그래밍", grade: "1학년", category: "basic", credit: 3, desc: "C언어 기초 및 프로그래밍 입문", prereqs: [] },
-                    { id: "TR_B02", title: "웹프로그래밍기초", grade: "1학년", category: "basic", credit: 3, desc: "HTML/CSS 및 웹 표준의 이해", prereqs: [] },
-                    { id: "CS_C01", title: "자료구조", grade: "2학년", category: "common", credit: 3, desc: "배열, 리스트, 스택, 큐, 트리 등 데이터 구조 학습", prereqs: ["TR_B01"] },
-                    { id: "WEB_M01", title: "웹프로그래밍", grade: "2학년", category: "required", credit: 3, desc: "JavaScript 기초 및 DOM 조작, 프론트엔드 입문", prereqs: ["TR_B02"] },
-                    { id: "WEB_M02", title: "웹서버프로그래밍", grade: "2학년", category: "required", credit: 3, desc: "Node.js/Express 또는 JSP를 이용한 백엔드 기초", prereqs: ["WEB_M01"] },
-                    { id: "CS_C02", title: "데이터베이스", grade: "2학년", category: "common", credit: 3, desc: "관계형 데이터베이스 설계 및 SQL", prereqs: [] },
-                    { id: "WEB_A01", title: "웹프레임워크1", grade: "3학년", category: "major_required", credit: 3, desc: "React.js를 활용한 SPA 개발 심화", prereqs: ["WEB_M02"] },
-                    { id: "WEB_A02", title: "웹프레임워크2", grade: "3학년", category: "major_required", credit: 3, desc: "상태관리(Redux/Recoil) 및 성능 최적화", prereqs: ["WEB_A01"] },
-                    { id: "WEB_A03", title: "클라우드컴퓨팅", grade: "3학년", category: "major_required", credit: 3, desc: "AWS/Azure 기초 및 배포 실습", prereqs: [] },
-                    { id: "WEB_CAP", title: "웹공학 캡스톤디자인", grade: "4학년", category: "capstone", credit: 3, desc: "졸업 작품 기획, 개발 및 배포", prereqs: ["WEB_A02", "WEB_A03"] }
+                    { id: "TR_B01", title: "컴퓨터프로그래밍", grade: "1학년", category: "basic", credit: 3, desc: "C언어 기초 및 프로그래밍 입문", prereqs: [], resources: [] },
+                    { id: "TR_B02", title: "웹프로그래밍기초", grade: "1학년", category: "basic", credit: 3, desc: "HTML/CSS 및 웹 표준의 이해", prereqs: [], resources: [{ type: "doc", title: "MDN Web Docs", url: "https://developer.mozilla.org/ko/", source: "MDN", tags: ["HTML", "CSS"] }] },
+                    { id: "CS_C01", title: "자료구조", grade: "2학년", category: "common", credit: 3, desc: "배열, 리스트, 스택, 큐, 트리 등 데이터 구조 학습", prereqs: ["TR_B01"], resources: [{ type: "lecture", title: "자료구조와 알고리즘", url: "https://www.inflearn.com/", source: "인프런", tags: ["CS지식"] }, { type: "job", title: "백엔드 개발자", url: "https://www.wanted.co.kr", source: "원티드", tags: ["Java", "Python"] }] },
+                    { id: "WEB_M01", title: "웹프로그래밍", grade: "2학년", category: "required", credit: 3, desc: "JavaScript 기초 및 DOM 조작, 프론트엔드 입문", prereqs: ["TR_B02"], resources: [{ type: "doc", title: "Modern JS Tutorial", url: "https://ko.javascript.info/", source: "JS Info", tags: ["JS"] }] },
+                    { id: "WEB_M02", title: "웹서버프로그래밍", grade: "2학년", category: "required", credit: 3, desc: "Node.js/Express 또는 JSP를 이용한 백엔드 기초", prereqs: ["WEB_M01"], resources: [] },
+                    { id: "CS_C02", title: "데이터베이스", grade: "2학년", category: "common", credit: 3, desc: "관계형 데이터베이스 설계 및 SQL", prereqs: [], resources: [] },
+                    { id: "WEB_A01", title: "웹프레임워크1", grade: "3학년", category: "major_required", credit: 3, desc: "React.js를 활용한 SPA 개발 심화", prereqs: ["WEB_M02"], resources: [{ type: "lecture", title: "React 완벽 가이드", url: "https://react.dev", source: "공식문서", tags: ["React"] }, { type: "job", title: "프론트엔드 엔지니어", url: "https://toss.im/career", source: "토스", tags: ["React", "Next.js"] }] },
+                    { id: "WEB_A02", title: "웹프레임워크2", grade: "3학년", category: "major_required", credit: 3, desc: "상태관리(Redux/Recoil) 및 성능 최적화", prereqs: ["WEB_A01"], resources: [] },
+                    { id: "WEB_A03", title: "클라우드컴퓨팅", grade: "3학년", category: "major_required", credit: 3, desc: "AWS/Azure 기초 및 배포 실습", prereqs: [], resources: [{ type: "doc", title: "AWS 기초", url: "https://aws.amazon.com", source: "AWS", tags: ["DevOps"] }] },
+                    { id: "WEB_CAP", title: "웹공학 캡스톤디자인", grade: "4학년", category: "capstone", credit: 3, desc: "졸업 작품 기획, 개발 및 배포", prereqs: ["WEB_A02", "WEB_A03"], resources: [{ type: "job", title: "웹 개발자 신입 채용", url: "https://www.naver-corp.com", source: "네이버", tags: ["Fullstack"] }] }
                 ]
             },
             // [Track 2] 모바일 SW 트랙
@@ -50,11 +50,11 @@ const UNIVERSITIES = [
                 id: "mobile",
                 name: "모바일 SW 트랙",
                 courses: [
-                    { id: "TR_B01_MOB", title: "컴퓨터프로그래밍", grade: "1학년", category: "basic", credit: 3, desc: "C언어 기초", prereqs: [] },
-                    { id: "MOB_M01", title: "객체지향언어1", grade: "2학년", category: "common", credit: 3, desc: "Java 프로그래밍 기초 및 OOP 개념", prereqs: ["TR_B01_MOB"] },
-                    { id: "MOB_M03", title: "안드로이드프로그래밍", grade: "2학년", category: "major_required", credit: 3, desc: "Android Studio 활용 앱 개발 기초", prereqs: ["MOB_M01"] },
-                    { id: "MOB_A01", title: "고급모바일프로그래밍", grade: "3학년", category: "major_required", credit: 3, desc: "심화 안드로이드 기능 구현", prereqs: ["MOB_M03"] },
-                    { id: "MOB_CAP", title: "모바일 캡스톤디자인", grade: "4학년", category: "capstone", credit: 3, desc: "모바일 앱 서비스 프로젝트", prereqs: ["MOB_A01"] }
+                    { id: "TR_B01_MOB", title: "컴퓨터프로그래밍", grade: "1학년", category: "basic", credit: 3, desc: "C언어 기초", prereqs: [], resources: [] },
+                    { id: "MOB_M01", title: "객체지향언어1", grade: "2학년", category: "common", credit: 3, desc: "Java 프로그래밍 기초 및 OOP 개념", prereqs: ["TR_B01_MOB"], resources: [] },
+                    { id: "MOB_M03", title: "안드로이드프로그래밍", grade: "2학년", category: "major_required", credit: 3, desc: "Android Studio 활용 앱 개발 기초", prereqs: ["MOB_M01"], resources: [{ type: "doc", title: "Android Docs", url: "https://developer.android.com", source: "Google", tags: ["Kotlin"] }] },
+                    { id: "MOB_A01", title: "고급모바일프로그래밍", grade: "3학년", category: "major_required", credit: 3, desc: "심화 안드로이드 기능 구현", prereqs: ["MOB_M03"], resources: [] },
+                    { id: "MOB_CAP", title: "모바일 캡스톤디자인", grade: "4학년", category: "capstone", credit: 3, desc: "모바일 앱 서비스 프로젝트", prereqs: ["MOB_A01"], resources: [] }
                 ]
             },
             // [Track 3] 빅 데이터 트랙
@@ -63,10 +63,10 @@ const UNIVERSITIES = [
                 name: "빅데이터 트랙",
                 courses: [
                     { id: "TR_B01_DATA", title: "컴퓨터프로그래밍", grade: "1학년", category: "basic", credit: 3, desc: "프로그래밍 입문", prereqs: [] },
-                    { id: "DATA_B01", title: "빅데이터기초", grade: "2학년", category: "common", credit: 3, desc: "빅데이터의 개념 및 파이썬 기초", prereqs: [] },
-                    { id: "DATA_M01", title: "데이터마이닝", grade: "2학년", category: "required", credit: 3, desc: "데이터 패턴 분석 및 추출 기법", prereqs: ["DATA_B01"] },
-                    { id: "DATA_A01", title: "인공지능", grade: "3학년", category: "major_required", credit: 3, desc: "머신러닝/딥러닝 기초 이론", prereqs: ["DATA_M01"] },
-                    { id: "DATA_CAP", title: "빅데이터 캡스톤디자인", grade: "4학년", category: "capstone", credit: 3, desc: "데이터 분석 기반 프로젝트", prereqs: ["DATA_A01"] }
+                    { id: "DATA_B01", title: "빅데이터기초", grade: "2학년", category: "common", credit: 3, desc: "빅데이터의 개념 및 파이썬 기초", prereqs: [], resources: [] },
+                    { id: "DATA_M01", title: "데이터마이닝", grade: "2학년", category: "required", credit: 3, desc: "데이터 패턴 분석 및 추출 기법", prereqs: ["DATA_B01"], resources: [] },
+                    { id: "DATA_A01", title: "인공지능", grade: "3학년", category: "major_required", credit: 3, desc: "머신러닝/딥러닝 기초 이론", prereqs: ["DATA_M01"], resources: [{ type: "lecture", title: "모두를 위한 딥러닝", url: "https://pytorch.org", source: "PyTorch", tags: ["AI"] }] },
+                    { id: "DATA_CAP", title: "빅데이터 캡스톤디자인", grade: "4학년", category: "capstone", credit: 3, desc: "데이터 분석 기반 프로젝트", prereqs: ["DATA_A01"], resources: [] }
                 ]
             }
         ]
@@ -81,9 +81,9 @@ const UNIVERSITIES = [
                 name: "인공지능 트랙",
                 courses: [
                     { id: "K_AI_01", title: "파이썬 프로그래밍", grade: "1학년", category: "basic", credit: 3, desc: "데이터 분석을 위한 Python 기초 문법", prereqs: [] },
-                    { id: "K_AI_03", title: "머신러닝 개론", grade: "2학년", category: "major_required", credit: 3, desc: "지도학습, 비지도학습 알고리즘의 이해", prereqs: ["K_AI_01"] },
-                    { id: "K_AI_05", title: "딥러닝 심화", grade: "3학년", category: "major_required", credit: 3, desc: "CNN, RNN 및 최신 딥러닝 모델 구현", prereqs: ["K_AI_03"] },
-                    { id: "K_AI_CAP", title: "AI 캡스톤디자인", grade: "4학년", category: "capstone", credit: 3, desc: "AI 모델 서빙 및 서비스 개발", prereqs: ["K_AI_05"] }
+                    { id: "K_AI_03", title: "머신러닝 개론", grade: "2학년", category: "major_required", credit: 3, desc: "지도학습, 비지도학습 알고리즘의 이해", prereqs: ["K_AI_01"], resources: [] },
+                    { id: "K_AI_05", title: "딥러닝 심화", grade: "3학년", category: "major_required", credit: 3, desc: "CNN, RNN 및 최신 딥러닝 모델 구현", prereqs: ["K_AI_03"], resources: [] },
+                    { id: "K_AI_CAP", title: "AI 캡스톤디자인", grade: "4학년", category: "capstone", credit: 3, desc: "AI 모델 서빙 및 서비스 개발", prereqs: ["K_AI_05"], resources: [] }
                 ]
             },
             {
@@ -91,9 +91,9 @@ const UNIVERSITIES = [
                 name: "게임 개발 트랙",
                 courses: [
                     { id: "K_GM_01", title: "C# 프로그래밍", grade: "1학년", category: "basic", credit: 3, desc: "게임 스크립팅을 위한 C# 기초", prereqs: [] },
-                    { id: "K_GM_02", title: "유니티 엔진 기초", grade: "2학년", category: "major_required", credit: 3, desc: "Unity 엔진 인터페이스 및 2D 게임 제작", prereqs: ["K_GM_01"] },
-                    { id: "K_GM_04", title: "3D 게임 프로그래밍", grade: "3학년", category: "major_required", credit: 3, desc: "3D 공간 수학 및 물리 엔진 활용", prereqs: ["K_GM_02"] },
-                    { id: "K_GM_CAP", title: "게임 출시 프로젝트", grade: "4학년", category: "capstone", credit: 3, desc: "게임 스토어 출시 및 배포 실습", prereqs: ["K_GM_04"] }
+                    { id: "K_GM_02", title: "유니티 엔진 기초", grade: "2학년", category: "major_required", credit: 3, desc: "Unity 엔진 인터페이스 및 2D 게임 제작", prereqs: ["K_GM_01"], resources: [{ type: "doc", title: "Unity Manual", url: "https://docs.unity3d.com", source: "Unity", tags: ["Engine"] }] },
+                    { id: "K_GM_04", title: "3D 게임 프로그래밍", grade: "3학년", category: "major_required", credit: 3, desc: "3D 공간 수학 및 물리 엔진 활용", prereqs: ["K_GM_02"], resources: [] },
+                    { id: "K_GM_CAP", title: "게임 출시 프로젝트", grade: "4학년", category: "capstone", credit: 3, desc: "게임 스토어 출시 및 배포 실습", prereqs: ["K_GM_04"], resources: [] }
                 ]
             }
         ]
@@ -307,39 +307,83 @@ const IntegratedRoadmapVisualization = ({ selectedTrack, onNodeClick }) => {
     );
 };
 
-const MockSidebar = ({ selectedCourse }) => (
-    <div style={styles.sidebarInner}>
-        <h4 style={styles.sidebarTitle}>과목 상세 정보</h4>
-        {selectedCourse ? (
-            <div>
-                <h3 style={{color: '#1e88e5', margin: '10px 0', fontSize: '18px'}}>{selectedCourse.title}</h3>
-                <p><strong>ID:</strong> {selectedCourse.id}</p>
-                <p><strong>학년/학점:</strong> {selectedCourse.grade} / {selectedCourse.credit}학점</p>
-                <p><strong>구분:</strong> {selectedCourse.category}</p>
-                <hr style={{margin: '15px 0'}} />
-                <p><strong>설명:</strong> {selectedCourse.desc}</p>
-                {selectedCourse.resources && selectedCourse.resources.length > 0 && (
-                     <div>
-                         <h5 style={{margin: '15px 0 5px 0'}}>참고 자료</h5>
-                         <ul style={{listStyle: 'none', padding: 0}}>
-                             {selectedCourse.resources.map((res, index) => (
-                                 <li key={index} style={{fontSize: '14px', marginBottom: '5px'}}>
-                                     <Search size={14} style={{display: 'inline-block', marginRight: '5px', color: '#666'}}/>
-                                     <a href={res.url} target="_blank" rel="noopener noreferrer" style={{color: '#333'}}>
-                                         {res.title} ({res.source})
-                                     </a>
-                                 </li>
-                             ))}
-                         </ul>
-                     </div>
-                 )}
-                <p><strong>선수 과목 ID:</strong> {selectedCourse.prereqs.join(', ') || '없음'}</p>
+const getResourceIcon = (type) => {
+    switch (type) {
+        case 'job': return { icon: Briefcase, color: '#4CAF50', bg: '#E8F5E9', tagsBg: '#CCEECC' }; // 녹색 계열 (취업/진로)
+        case 'lecture': return { icon: Monitor, color: '#9C27B0', bg: '#F3E5F5', tagsBg: '#E1BEE7' }; // 보라색 계열 (강의/영상)
+        case 'doc': return { icon: BookOpen, color: '#2196F3', bg: '#E3F2FD', tagsBg: '#BBDEFB' }; // 파란색 계열 (문서/공식문서)
+        default: return { icon: Search, color: '#666', bg: '#EEE', tagsBg: '#CCC' };
+    }
+}
+
+const MockSidebar = ({ selectedCourse }) => {
+    const isBigDataCourse = selectedCourse && selectedCourse.id === 'CS305'; // 이미지에서 가정한 빅데이터 처리 (CS305는 Mock ID)
+    
+    return (
+        <div style={styles.sidebarInner}>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #eee', paddingBottom: '10px', margin: '0 0 15px 0'}}>
+                 <h4 style={styles.sidebarTitle}>과목 상세 정보</h4>
+                 <div style={{cursor: 'pointer'}}>❌</div>
             </div>
-        ) : (
-            <p style={{ color: '#888', marginTop: '20px' }}>로드맵에서 과목 노드를 클릭하세요. 상세 정보가 여기에 표시됩니다.</p>
-        )}
-    </div>
-);
+            
+            {selectedCourse ? (
+                <div>
+                    <h3 style={{color: '#333', margin: '0 0 5px 0', fontSize: '18px'}}>{selectedCourse.title}</h3>
+                    <p style={{fontSize: '14px', color: '#666'}}>{selectedCourse.desc}</p>
+                    
+                    <div style={{display: 'flex', gap: '15px', marginTop: '10px', marginBottom: '20px'}}>
+                        <p style={{fontSize: '14px', color: '#666', margin: 0}}>
+                            <BookOpen size={14} style={{marginRight: '5px', verticalAlign: 'middle'}}/>
+                            {selectedCourse.credit}학점
+                        </p>
+                        <p style={{fontSize: '14px', color: '#666', margin: 0}}>
+                            <CornerRightDown size={14} style={{marginRight: '5px', verticalAlign: 'middle'}}/>
+                            {selectedCourse.category === 'major_required' ? 'Advanced' : 'Basic/Common'}
+                        </p>
+                    </div>
+
+                    <h4 style={{ margin: '20px 0 10px 0', fontWeight: 'bold' }}>🔗 관련 리소스</h4>
+                    
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                        {(selectedCourse.resources && selectedCourse.resources.length > 0) ? (
+                            selectedCourse.resources.map((res, index) => {
+                                const { icon: Icon, color, bg, tagsBg } = getResourceIcon(res.type);
+                                return (
+                                    <a key={index} href={res.url} target="_blank" rel="noopener noreferrer" style={styles.resourceCard}>
+                                        <div style={{display: 'flex', gap: '10px', alignItems: 'center'}}>
+                                            <div style={{backgroundColor: bg, padding: '10px', borderRadius: '8px', flexShrink: 0}}>
+                                                <Icon size={24} color={color} />
+                                            </div>
+                                            <div style={{flexGrow: 1}}>
+                                                <p style={{margin: 0, fontWeight: 'bold', color: '#333'}}>{res.title}</p>
+                                                <p style={{margin: '2px 0 5px 0', fontSize: '12px', color: '#888'}}>{res.source}</p>
+                                                
+                                                {res.tags && res.tags.length > 0 && (
+                                                    <div style={{display: 'flex', gap: '5px'}}>
+                                                        {res.tags.map((tag, tagIndex) => (
+                                                            <span key={tagIndex} style={styles.tagStyle}>
+                                                                {tag}
+                                                            </span>
+                                                        ))}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <span style={{fontSize: '12px', color: '#aaa'}}>↗️</span>
+                                        </div>
+                                    </a>
+                                );
+                            })
+                        ) : (
+                            <p style={{ color: '#888' }}>제공된 학습 리소스가 없습니다.</p>
+                        )}
+                    </div>
+                </div>
+            ) : (
+                <p style={{ color: '#888', marginTop: '20px' }}>로드맵에서 과목 노드를 클릭하세요. 상세 정보가 여기에 표시됩니다.</p>
+            )}
+        </div>
+    );
+};
 
 
 // =======================================================
