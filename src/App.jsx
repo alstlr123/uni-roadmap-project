@@ -28,25 +28,23 @@ const MockLayout = () => {
 // =======================================================
 
 function App() {
-  return (
-    // AppProvider 대신 MockAppProvider 사용
-    <MockAppProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Layout 대신 MockLayout 사용 */}
-          <Route element={<MockLayout />}>
-            {/*  시작 경로(/)를 RoadmapPage로 강제 지정 */}
-            <Route path="/" element={<RoadmapPage />} /> 
-            
-            {/* 나머지 경로는 그대로 유지 (팀원들의 작업을 위해) */}
-            <Route path="/select" element={<SelectionPage />} />
-            <Route path="/roadmap" element={<RoadmapPage />} /> 
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/landing" element={<LandingPage />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </MockAppProvider>
+  return (
+    <MockAppProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route element={<MockLayout />}>
+            {/* 시작 페이지를 LandingPage로 설정 */}
+            <Route path="/" element={<LandingPage />} />
+
+            {/* 나머지 경로는 팀원 작업 그대로 유지 */}
+            <Route path="/select" element={<SelectionPage />} />
+            <Route path="/roadmap" element={<RoadmapPage />} /> 
+            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/landing" element={<LandingPage />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </MockAppProvider>
   );
 }
 
