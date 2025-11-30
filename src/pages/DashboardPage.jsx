@@ -1,14 +1,5 @@
-// src/pages/DashboardPage.jsx
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useApp } from "../context/AppContext";
-
-// ---------------------- 트랙 정보 ----------------------
-// === 트랙 / 과목 데이터 (App.js에서 쓰던 것 그대로 가져옴) ===
-const BASIC_MAX = 3;
-const REQ_MAX = 15;
-const ELEC_MAX = 39;
-const TOTAL_MAX = 78;
 
 const TRACKS = [
   {
@@ -32,6 +23,11 @@ const TRACKS = [
     description: "웹 서비스 설계, 웹 애플리케이션 개발 트랙",
   },
 ];
+
+const BASIC_MAX = 3;
+const REQ_MAX = 15;
+const ELEC_MAX = 39;
+const TOTAL_MAX = 78;
 
 const COURSES_BY_TRACK = {
   mobile: [
@@ -122,24 +118,24 @@ const INITIAL_COMPLETED = {
   web: [],
 };
 
-const DashboardPage = () => {
+function DashboardPage({ selectedSchool }) {
   const navigate = useNavigate();
-  const { selectedUniv } = useApp();
+
   const [selectedTrackIds, setSelectedTrackIds] = useState([]);
   const [completedByTrack, setCompletedByTrack] = useState(INITIAL_COMPLETED);
 
-  // 학교 선택 안 하고 바로 들어온 경우
-  if (!selectedUniv) {
+  if (!selectedSchool) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center px-4">
-        <p className="mb-4 text-gray-700">학교가 선택되지 않았습니다.</p>
-        <button
-          onClick={() => navigate("/")}
-          className="px-4 py-2 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition"
-        >
-          홈으로 돌아가기
-        </button>
-      </div>
+      <main className="page-main">
+        <div className="card-large" style={{ textAlign: "center" }}>
+          <p style={{ marginBottom: 16 }}>
+            먼저 학교를 선택한 뒤 전공과목 시뮬레이션으로 이동해 주세요.
+          </p>
+          <button className="back-button" onClick={() => navigate("/")}>
+            ← 학교 검색 페이지로 이동
+          </button>
+        </div>
+      </main>
     );
   }
 
@@ -149,7 +145,9 @@ const DashboardPage = () => {
         return prev.filter((id) => id !== trackId);
       }
       if (prev.length >= 2) {
-        window.alert("트랙은 최대 2개까지만 선택할 수 있습니다. 먼저 다른 트랙을 해제해주세요.");
+        window.alert(
+          "트랙은 최대 2개까지만 선택할 수 있습니다. 먼저 다른 트랙을 해제해주세요."
+        );
         return prev;
       }
       return [...prev, trackId];
@@ -187,7 +185,12 @@ const DashboardPage = () => {
 
     const totalDone = basicDone + reqDone + elecDone;
 
-    return { basicDone, reqDone, elecDone, totalDone };
+    return {
+      basicDone,
+      reqDone,
+      elecDone,
+      totalDone,
+    };
   };
 
   const selectedTracks = selectedTrackIds.map((id) =>
@@ -197,7 +200,12 @@ const DashboardPage = () => {
   const summaries = [0, 1].map((idx) => {
     const track = selectedTracks[idx];
     if (!track) {
-      return { basicDone: 0, reqDone: 0, elecDone: 0, totalDone: 0 };
+      return {
+        basicDone: 0,
+        reqDone: 0,
+        elecDone: 0,
+        totalDone: 0,
+      };
     }
     return calcSummary(track.id);
   });
@@ -205,140 +213,56 @@ const DashboardPage = () => {
   const combinedTotalDone = summaries[0].totalDone + summaries[1].totalDone;
 
   return (
-    <main className="dashboard-main">
-      <div className="dashboard-container">
+    <main className="page-main">
+      <div className="card-large dashboard-card-large">
         <button
           className="back-button"
           onClick={() => navigate("/select")}
         >
-          ← 로드맵 / 전공과목 시뮬레이션 선택으로 돌아가기
+          ← 로드맵 / 시뮬레이션 선택으로 돌아가기
         </button>
 
-        {/* 헤더 */}
-        <section
-          className="dashboard-header"
-          style={{ alignItems: "center", textAlign: "center" }}
-        >
-          <div className="dashboard-school">{selectedUniv.name}</div>
-          <div className="dashboard-title">전공과목 시뮬레이션</div>
-          <div
-            style={{
-              fontSize: 13,
-              color: "#6b7280",
-              marginTop: 4,
-            }}
-          >
+        <section className="dashboard-header">
+          <div className="dashboard-school">{selectedSchool.name}</div>
+          <div className="dashboard-title">시뮬레이션</div>
+          <div className="dashboard-sub">
             원하는 트랙을 선택하고 수강한 전공과목을 선택하면
             전공 이수 현황과 남은 과목을 한눈에 확인할 수 있습니다.
           </div>
         </section>
 
         {/* 트랙 선택 */}
-        <section style={{ width: "100%", marginTop: 16 }}>
-          <div
-            style={{
-              textAlign: "center",
-              fontSize: 15,
-              fontWeight: 700,
-              marginBottom: 12,
-            }}
-          >
-            원하는 트랙 선택
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-              gap: 12,
-            }}
-          >
+        <section className="track-section">
+          <div className="track-title">원하는 트랙 선택</div>
+          <div className="track-grid">
             {TRACKS.map((track) => {
               const isActive = selectedTrackIds.includes(track.id);
               return (
                 <div
                   key={track.id}
+                  className={`track-card ${isActive ? "track-card-active" : ""}`}
                   onClick={() => toggleTrack(track.id)}
-                  style={{
-                    borderRadius: 20,
-                    border: isActive
-                      ? "2px solid #22c55e"
-                      : "1px solid #e5e7eb",
-                    padding: "14px 18px",
-                    background: "#ffffff",
-                    textAlign: "left",
-                    cursor: "pointer",
-                    boxShadow: isActive
-                      ? "0 10px 25px rgba(34,197,94,0.25)"
-                      : "0 8px 20px rgba(15,23,42,0.06)",
-                  }}
                 >
-                  <div
-                    style={{
-                      fontSize: 14,
-                      fontWeight: 700,
-                      marginBottom: 4,
-                    }}
-                  >
-                    {track.name}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 12,
-                      color: "#6b7280",
-                    }}
-                  >
-                    {track.description}
-                  </div>
+                  <div className="track-name">{track.name}</div>
+                  <div className="track-desc">{track.description}</div>
                 </div>
               );
             })}
           </div>
         </section>
 
-        {/* 이수 현황 표 */}
-        <section style={{ width: "100%", marginTop: 24 }}>
-          <div
-            style={{
-              fontWeight: 700,
-              fontSize: 15,
-              marginBottom: 10,
-              textAlign: "left",
-            }}
-          >
-            전공 이수 현황 요약
-          </div>
-          <div
-            style={{
-              borderRadius: 16,
-              overflow: "hidden",
-              border: "1px solid #e5e7eb",
-              background: "#f9fafb",
-            }}
-          >
-            <table
-              style={{
-                width: "100%",
-                borderCollapse: "collapse",
-                fontSize: 13,
-              }}
-            >
+        {/* 전공 이수 현황 요약 */}
+        <section className="summary-section">
+          <div className="summary-title">전공 이수 현황 요약</div>
+          <div className="summary-table-wrapper">
+            <table className="summary-table">
               <thead>
-                <tr
-                  style={{
-                    background: "#f3f4f6",
-                    color: "#374151",
-                    textAlign: "center",
-                  }}
-                >
-                  <th style={{ padding: "8px 6px", minWidth: 80 }}>이수구분</th>
-                  <th style={{ padding: "8px 6px", minWidth: 80 }}>전공기초</th>
-                  <th style={{ padding: "8px 6px", minWidth: 110 }}>
-                    전공지정 (전공필수)
-                  </th>
-                  <th style={{ padding: "8px 6px", minWidth: 110 }}>
-                    전공소계 (기초,지정,선택)
-                  </th>
-                  <th style={{ padding: "8px 6px", minWidth: 80 }}>총합계</th>
+                <tr>
+                  <th>이수구분</th>
+                  <th>전공기초</th>
+                  <th>전공지정 (전공필수)</th>
+                  <th>전공소계 (기초,지정,선택)</th>
+                  <th>총합계</th>
                 </tr>
               </thead>
               <tbody>
@@ -346,64 +270,21 @@ const DashboardPage = () => {
                   const track = selectedTracks[idx];
                   const label = idx === 0 ? "제1트랙" : "제2트랙";
                   const summary = summaries[idx];
-                  const rowBg = idx === 0 ? "#ffffff" : "#f9fafb";
 
                   return (
-                    <tr key={idx} style={{ textAlign: "center" }}>
-                      <td
-                        style={{
-                          padding: "8px 6px",
-                          background: rowBg,
-                          borderTop: "1px solid #e5e7eb",
-                          fontWeight: 600,
-                        }}
-                      >
+                    <tr key={idx}>
+                      <td>
                         {label}
                         <br />
-                        <span
-                          style={{ fontSize: 11, color: "#6b7280" }}
-                        >
+                        <span className="summary-track-name">
                           {track ? track.name : "-"}
                         </span>
                       </td>
-                      <td
-                        style={{
-                          padding: "8px 6px",
-                          background: rowBg,
-                          borderTop: "1px solid #e5e7eb",
-                        }}
-                      >
-                        {summary.basicDone} / ({BASIC_MAX})
-                      </td>
-                      <td
-                        style={{
-                          padding: "8px 6px",
-                          background: rowBg,
-                          borderTop: "1px solid #e5e7eb",
-                        }}
-                      >
-                        {summary.reqDone} / ({REQ_MAX})
-                      </td>
-                      <td
-                        style={{
-                          padding: "8px 6px",
-                          background: rowBg,
-                          borderTop: "1px solid #e5e7eb",
-                        }}
-                      >
-                        {summary.totalDone} / ({ELEC_MAX})
-                      </td>
+                      <td>{summary.basicDone} / ({BASIC_MAX})</td>
+                      <td>{summary.reqDone} / ({REQ_MAX})</td>
+                      <td>{summary.totalDone} / ({ELEC_MAX})</td>
                       {idx === 0 && (
-                        <td
-                          rowSpan={2}
-                          style={{
-                            padding: "8px 6px",
-                            background: "#ffffff",
-                            color: "#111827",
-                            borderTop: "1px solid #e5e7eb",
-                            fontWeight: 700,
-                          }}
-                        >
+                        <td rowSpan={2} className="summary-total">
                           {combinedTotalDone} / ({TOTAL_MAX})
                         </td>
                       )}
@@ -415,52 +296,24 @@ const DashboardPage = () => {
           </div>
         </section>
 
-        {/* 좌우 2열: 아직 수강 X / 수강 O */}
-        <section
-          className="dashboard-grid"
-          style={{
-            marginTop: 24,
-            display: "grid",
-            gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-            gap: 16,
-          }}
-        >
+        {/* 아직 수강X / 수강O */}
+        <section className="dashboard-bottom">
           {/* 아직 수강하지 않은 과목 */}
           <div className="dashboard-card">
             <div className="dashboard-card-title">아직 수강하지 않은 과목</div>
-            <div
-              style={{
-                fontSize: 12,
-                color: "#6b7280",
-                textAlign: "left",
-                marginBottom: 10,
-              }}
-            >
+            <div className="dashboard-card-sub">
               수강하지 않은 과목 목록입니다. 실제로 들은 전공과목은
               클릭해서 오른쪽 ‘수강한 전공과목’ 영역으로 옮겨 보세요.
             </div>
 
             {selectedTracks.length === 0 && (
-              <div
-                style={{
-                  fontSize: 12,
-                  color: "#9ca3af",
-                  textAlign: "left",
-                }}
-              >
+              <div className="dashboard-empty">
                 먼저 위에서 트랙을 선택해 주세요.
               </div>
             )}
 
             {selectedTracks.length > 0 && (
-              <div
-                style={{
-                  borderRadius: 12,
-                  border: "1px solid #e5e7eb",
-                  background: "#f9fafb",
-                  padding: "16px 16px",
-                }}
-              >
+              <div className="not-taken-wrapper">
                 {selectedTracks.map((track) => {
                   const allCourses = COURSES_BY_TRACK[track.id] || [];
                   const completedCodes = completedByTrack[track.id] || [];
@@ -469,80 +322,23 @@ const DashboardPage = () => {
                   );
 
                   return (
-                    <div
-                      key={track.id}
-                      style={{
-                        marginBottom: 16,
-                        textAlign: "left",
-                      }}
-                    >
-                      <div
-                        style={{
-                          fontSize: 17,
-                          fontWeight: 800,
-                          margin: "4px 0 10px",
-                          textAlign: "center",
-                        }}
-                      >
-                        {track.name}
-                      </div>
+                    <div key={track.id} className="course-block">
+                      <div className="course-track-title">{track.name}</div>
                       {notTaken.length === 0 ? (
-                        <div
-                          style={{
-                            fontSize: 13,
-                            color: "#9ca3af",
-                            marginBottom: 4,
-                            textAlign: "center",
-                          }}
-                        >
+                        <div className="dashboard-empty">
                           아직 수강하지 않은 과목이 없습니다.
                         </div>
                       ) : (
                         notTaken.map((c) => (
                           <div
                             key={c.code}
+                            className="course-row"
                             onClick={() => toggleCompleted(track.id, c.code)}
-                            style={{
-                              display: "flex",
-                              justifyContent: "space-between",
-                              alignItems: "center",
-                              padding: "6px 4px",
-                              cursor: "pointer",
-                              fontSize: 14,
-                            }}
                           >
-                            <div
-                              style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                textAlign: "left",
-                              }}
-                            >
-                              <div
-                                style={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
-                                  alignItems: "center",
-                                }}
-                              >
-                                <span
-                                  style={{
-                                    fontWeight: 600,
-                                  }}
-                                >
-                                  {c.name}
-                                </span>
-                                <span
-                                  style={{
-                                    fontSize: 11,
-                                    color: "#6b7280",
-                                    marginLeft: 8,
-                                  }}
-                                >
-                                  {c.year}학년 · {c.category} · {c.code}
-                                </span>
-                              </div>
-                            </div>
+                            <span className="course-name">{c.name}</span>
+                            <span className="course-meta">
+                              {c.year}학년 · {c.category} · {c.code}
+                            </span>
                           </div>
                         ))
                       )}
@@ -556,26 +352,13 @@ const DashboardPage = () => {
           {/* 수강한 전공과목 */}
           <div className="dashboard-card">
             <div className="dashboard-card-title">수강한 전공과목</div>
-            <div
-              style={{
-                fontSize: 12,
-                color: "#6b7280",
-                textAlign: "left",
-                marginBottom: 10,
-              }}
-            >
+            <div className="dashboard-card-sub">
               현재 수강한 전공과목 목록입니다. 카드를 클릭하면
               ‘수강하지 않은 과목’으로 돌려놓을 수 있습니다.
             </div>
 
             {selectedTracks.length === 0 && (
-              <div
-                style={{
-                  fontSize: 12,
-                  color: "#9ca3af",
-                  textAlign: "left",
-                }}
-              >
+              <div className="dashboard-empty">
                 먼저 위에서 트랙을 선택해 주세요.
               </div>
             )}
@@ -587,91 +370,32 @@ const DashboardPage = () => {
               );
 
               return (
-                <div
-                  key={track.id}
-                  style={{
-                    marginBottom: 14,
-                    textAlign: "left",
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: 13,
-                      fontWeight: 700,
-                      marginBottom: 6,
-                    }}
-                  >
-                    {track.name}
-                  </div>
+                <div key={track.id} className="course-block">
+                  <div className="course-track-title">{track.name}</div>
                   {completedCourses.length === 0 ? (
-                    <div
-                      style={{
-                        fontSize: 12,
-                        color: "#9ca3af",
-                        marginBottom: 4,
-                      }}
-                    >
+                    <div className="dashboard-empty">
                       선택된 전공과목이 없습니다.
                     </div>
                   ) : (
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        gap: 8,
-                      }}
-                    >
+                    <div className="taken-wrapper">
                       {completedCourses.map((c) => {
-                        let bg = "#eff6ff";
-                        let border = "#bfdbfe";
-                        if (c.year === 1) {
-                          bg = "#fee2e2";
-                          border = "#fecaca";
-                        } else if (c.year === 2) {
-                          bg = "#fef3c7";
-                          border = "#fde68a";
-                        } else if (c.year === 3) {
-                          bg = "#dcfce7";
-                          border = "#bbf7d0";
-                        } else if (c.year === 4) {
-                          bg = "#e0f2fe";
-                          border = "#bfdbfe";
-                        }
+                        let colorClass = "tag-year-etc";
+                        if (c.year === 1) colorClass = "tag-year-1";
+                        else if (c.year === 2) colorClass = "tag-year-2";
+                        else if (c.year === 3) colorClass = "tag-year-3";
+                        else if (c.year === 4) colorClass = "tag-year-4";
 
                         return (
                           <div
                             key={c.code}
-                            onClick={() => toggleCompleted(track.id, c.code)}
-                            style={{
-                              borderRadius: 12,
-                              border: `1px solid ${border}`,
-                              background: bg,
-                              padding: "8px 10px",
-                              cursor: "pointer",
-                            }}
+                            className={`taken-course ${colorClass}`}
+                            onClick={() =>
+                              toggleCompleted(track.id, c.code)
+                            }
                           >
-                            <div
-                              style={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                                alignItems: "center",
-                                marginBottom: 2,
-                              }}
-                            >
-                              <span
-                                style={{
-                                  fontSize: 13,
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {c.name}
-                              </span>
-                              <span
-                                style={{
-                                  fontSize: 11,
-                                  color: "#6b7280",
-                                }}
-                              >
+                            <div className="taken-top">
+                              <span className="course-name">{c.name}</span>
+                              <span className="course-meta">
                                 {c.year}학년 · {c.category} · {c.code}
                               </span>
                             </div>
@@ -688,7 +412,6 @@ const DashboardPage = () => {
       </div>
     </main>
   );
-};
+}
 
 export default DashboardPage;
-
