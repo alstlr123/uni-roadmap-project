@@ -12,7 +12,7 @@ import 'reactflow/dist/style.css';
 import ELK from 'elkjs/lib/elk.bundled.js'; 
 
 // 이 파일은 Context를 사용하지만, 독립적으로 작동하기 위해 Mock으로 대체합니다.
-// 실제 팀 프로젝트에서는 이 부분을 import { AppContext } from '../context/AppContext'; 로 변경해야 함
+// 실제 팀 프로젝트에서는 이 부분을 import { AppContext } from '../context/AppContext'; 로 변경해야 합니다.
 const AppContext = React.createContext({
     universityData: { id: "hansung", name: "한성대학교" },
     selectedTrackId: "web",
@@ -20,9 +20,9 @@ const AppContext = React.createContext({
 }); 
 
 
-
-// MOCK DATA 
-
+// =======================================================
+// [0. MOCK DATA - 사용자 제공 데이터 통합]
+// =======================================================
 const UNIVERSITIES = [
     {
         id: "hansung",
@@ -101,8 +101,9 @@ const UNIVERSITIES = [
 ];
 
 
-
+// -------------------------------------------------------
 // 상수 설정
+// -------------------------------------------------------
 const INITIAL_UNIVERSITY_ID = "hansung";
 const INITIAL_TRACK_ID = "web";
 
@@ -117,7 +118,9 @@ const PROGRESS_MOCK_DATA = {
     web: 29, mobile: 25, bigdata: 40, 'ai_track': 20, 'game_track': 17 
 };
 
+// =======================================================
 // [1. UTILITY FUNCTIONS - ELK LAYOUT]
+// =======================================================
 const elk = new ELK();
 
 const getLayoutedElements = async (courses) => {
@@ -206,8 +209,9 @@ const getLayoutedElements = async (courses) => {
     }
 };
 
-
+// =======================================================
 // [2. INTEGRATED COMPONENTS]
+// =======================================================
 
 const CustomCourseNode = ({ data, selected }) => {
     const { courseData } = data;
@@ -338,8 +342,9 @@ const MockSidebar = ({ selectedCourse }) => (
 );
 
 
-
+// =======================================================
 // [3. MAIN COMPONENT] RoadmapPage
+// =======================================================
 export default function RoadmapPage() {
     // Context Mocking을 통해 독립적으로 작동
     const { 
@@ -398,98 +403,97 @@ export default function RoadmapPage() {
     const navigateToHome = contextNavigateToHome;
 
     return (
-        <div style={{ padding: '0 0' }}> 
-            <div style={styles.pageContainer}>
-                {/* 1. 상단 헤더 영역 */}
-                <header style={styles.header}>
-                    <div style={styles.leftSection}>
-                        <ChevronLeft size={24} style={styles.icon} onClick={navigateToHome} />
-                        <h1 style={styles.pageTitle}>커리큘럼 로드맵</h1>
-                        <span style={styles.universityNameBox}>
-                            <Home size={16} color="#1e88e5" style={{marginRight: '5px'}}/>
-                            {currentUniversityData.name}
-                        </span>
-                    </div>
-                    
-                    <div style={styles.rightSection}>
-                        {/* 학교 선택 드롭다운 박스 */}
-                        <div style={styles.schoolSelectBox}>
-                             <p style={styles.selectLabel}>학교 선택</p>
-                             <div style={styles.universityDisplay}>
-                                <Zap size={16} color="#444" />
-                                <select style={styles.select} value={selectedUniversityId} onChange={handleUniversityChange}>
-                                    {UNIVERSITIES.map(uni => (
-                                        <option key={uni.id} value={uni.id}>{uni.name}</option>
-                                    ))}
-                                </select>
-                             </div>
-                        </div>
-
-                        {/* 진도율 표시 박스 (Progress Bar 포함) */}
-                        <div style={styles.progressBox}>
-                            <p style={styles.progressPercent}>{progressPercent}%</p>
-                            <p style={styles.progressText}>({completedCourses} / {totalCourses})</p>
-                            <div style={styles.progressBarWrapper}>
-                                <div style={{ ...styles.progressBar, width: `${progressPercent}%` }}></div>
-                            </div>
-                        </div>
-                    </div>
-                </header>
-
-                {/* 2. 트랙 탭 메뉴 영역 */}
-                <nav style={styles.trackNav}>
-                    {currentTracks.map(track => (
-                        <button
-                            key={track.id}
-                            style={{
-                                ...styles.trackButton,
-                                // '전체 보기' 버튼 스타일을 이미지처럼 어둡게 처리
-                                ...(track.id === 'all' ? styles.trackButtonAll : {}),
-                                ...(currentViewingTrackId === track.id ? styles.activeTrack : {})
-                            }}
-                            onClick={() => handleTrackSelect(track.id)}
-                        >
-                            {track.name} 
-                            {track.id !== 'all' && (
-                                // progressText의 배경색을 활성화 상태에 따라 변경
-                                 <span style={{
-                                     ...styles.trackProgressText,
-                                     backgroundColor: currentViewingTrackId === track.id ? '#546e7a' : '#fff',
-                                     color: currentViewingTrackId === track.id ? 'white' : '#1e88e5'
-                                 }}>
-                                    {PROGRESS_MOCK_DATA[track.id] || 0}%
-                                </span>
-                            )}
-                        </button>
-                    ))}
-                </nav>
-
-                {/* 3. 로드맵 및 사이드바 영역 */}
-                <div style={styles.mainContentArea}>
-                    <div style={styles.roadmapVisualization}>
-                        {/* 로드맵 시각화 컴포넌트 */}
-                        <IntegratedRoadmapVisualization 
-                            selectedTrack={selectedTrack} 
-                            onNodeClick={setSelectedCourseDetail}
-                        />
-                    </div>
-
-                    {/* 우측 사이드바 영역 */}
-                    <div style={styles.sidebarContainer}>
-                        <MockSidebar selectedCourse={selectedCourseDetail} />
-                    </div>
+        <div style={styles.pageContainer}> 
+            {/* 1. 상단 헤더 영역 */}
+            <header style={styles.header}>
+                <div style={styles.leftSection}>
+                    <ChevronLeft size={24} style={styles.icon} onClick={navigateToHome} />
+                    <h1 style={styles.pageTitle}>커리큘럼 로드맵</h1>
+                    <span style={styles.universityNameBox}>
+                        <Home size={16} color="#1e88e5" style={{marginRight: '5px'}}/>
+                        {currentUniversityData.name}
+                    </span>
                 </div>
                 
-                <footer style={styles.footer}>
-                    Designed by <span style={{ fontWeight: 'bold' }}>Reoddy</span>
-                </footer>
+                <div style={styles.rightSection}>
+                    {/* 학교 선택 드롭다운 박스 */}
+                    <div style={styles.schoolSelectBox}>
+                         <p style={styles.selectLabel}>학교 선택</p>
+                         <div style={styles.universityDisplay}>
+                            <Zap size={16} color="#444" />
+                            <select style={styles.select} value={selectedUniversityId} onChange={handleUniversityChange}>
+                                {UNIVERSITIES.map(uni => (
+                                    <option key={uni.id} value={uni.id}>{uni.name}</option>
+                                ))}
+                            </select>
+                         </div>
+                    </div>
+
+                    {/* 진도율 표시 박스 (Progress Bar 포함) */}
+                    <div style={styles.progressBox}>
+                        <p style={styles.progressPercent}>{progressPercent}%</p>
+                        <p style={styles.progressText}>({completedCourses} / {totalCourses})</p>
+                        <div style={styles.progressBarWrapper}>
+                            <div style={{ ...styles.progressBar, width: `${progressPercent}%` }}></div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            {/* 2. 트랙 탭 메뉴 영역 */}
+            <nav style={styles.trackNav}>
+                {currentTracks.map(track => (
+                    <button
+                        key={track.id}
+                        style={{
+                            ...styles.trackButton,
+                            // '전체 보기' 버튼 스타일을 이미지처럼 어둡게 처리
+                            ...(track.id === 'all' ? styles.trackButtonAll : {}),
+                            ...(currentViewingTrackId === track.id ? styles.activeTrack : {})
+                        }}
+                        onClick={() => handleTrackSelect(track.id)}
+                    >
+                        {track.name} 
+                        {track.id !== 'all' && (
+                            // progressText의 배경색을 활성화 상태에 따라 변경
+                             <span style={{
+                                 ...styles.trackProgressText,
+                                 backgroundColor: currentViewingTrackId === track.id ? '#546e7a' : '#fff',
+                                 color: currentViewingTrackId === track.id ? 'white' : '#1e88e5'
+                             }}>
+                            {PROGRESS_MOCK_DATA[track.id] || 0}%
+                        </span>
+                        )}
+                    </button>
+                ))}
+            </nav>
+
+            {/* 3. 로드맵 및 사이드바 영역 */}
+            <div style={styles.mainContentArea}>
+                <div style={styles.roadmapVisualization}>
+                    {/* 로드맵 시각화 컴포넌트 */}
+                    <IntegratedRoadmapVisualization 
+                        selectedTrack={selectedTrack} 
+                        onNodeClick={setSelectedCourseDetail}
+                    />
+                </div>
+
+                {/* 우측 사이드바 영역 */}
+                <div style={styles.sidebarContainer}>
+                    <MockSidebar selectedCourse={selectedCourseDetail} />
+                </div>
             </div>
+            
+            <footer style={styles.footer}>
+                Designed by <span style={{ fontWeight: 'bold' }}>Reoddy</span>
+            </footer>
         </div>
     );
 }
 
-
+// =======================================================
 // [4. Styling] (이미지 UI 기반)
+// =======================================================
 const styles = {
     pageContainer: { fontFamily: 'sans-serif', minHeight: '100vh', backgroundColor: '#fff', padding: '0 20px', display: 'flex', flexDirection: 'column' },
     header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '15px 0', borderBottom: '1px solid #eee' },
