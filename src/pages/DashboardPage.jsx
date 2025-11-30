@@ -224,7 +224,7 @@ function DashboardPage({ selectedSchool }) {
 
         <section className="dashboard-header">
           <div className="dashboard-school">{selectedSchool.name}</div>
-          <div className="dashboard-title">시뮬레이션</div>
+          <div className="dashboard-title">전공과목 시뮬레이션</div>
           <div className="dashboard-sub">
             원하는 트랙을 선택하고 수강한 전공과목을 선택하면
             전공 이수 현황과 남은 과목을 한눈에 확인할 수 있습니다.
