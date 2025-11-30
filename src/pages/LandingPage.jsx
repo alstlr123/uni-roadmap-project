@@ -1,65 +1,300 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Search, GraduationCap, ArrowRight } from 'lucide-react';
-import { UNIVERSITIES } from '../data/mockData'; // 데이터 가져오기
-import { useApp } from '../context/AppContext';   // ★ 전역 상태 가져오기
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "../App.css";
+
+// 한글 초성 유틸
+const INITIALS = [
+  "ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"
+];
+
+function getKoreanInitials(str) {
+  let result = "";
+  for (const ch of str) {
+    const code = ch.charCodeAt(0);
+    if (code >= 0xac00 && code <= 0xd7a3) {
+      const index = code - 0xac00;
+      const initialIndex = Math.floor(index / 588);
+      result += INITIALS[initialIndex] || "";
+    } else if (/[ㄱ-ㅎ]/.test(ch)) {
+      result += ch;
+    }
+  }
+  return result;
+}
+
+// 검색 대상 학교 (지금은 한성대만)
+const SCHOOLS = [
+  {
+    id: "hansung",
+    name: "한성대학교",
+    department: "컴퓨터공학부",
+  },
+];
 
 const LandingPage = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const { setSelectedUniv } = useApp(); // Context에서 '저장하는 함수' 꺼내기
+  const [query, setQuery] = useState("");
+  const [highlightIndex, setHighlightIndex] = useState(-1);
   const navigate = useNavigate();
 
-  // 검색어에 맞는 학교만 필터링
-  const filteredUnivs = UNIVERSITIES.filter(univ => 
-    univ.name.includes(searchTerm)
-  );
+  const getSuggestions = () => {
+    const trimmed = query.trim();
+    if (!trimmed) return [];
 
-  const handleSelect = (univ) => {
-    setSelectedUniv(univ); // 1. 전역 상태에 선택한 학교 저장
-    navigate('/select');   // 2. 선택 페이지로 이동
+    const normalizedQuery = trimmed.replace(/\s+/g, "");
+    const queryInitials = getKoreanInitials(normalizedQuery);
+
+    return SCHOOLS.filter((school) => {
+      const name = school.name;
+      const normalizedName = name.replace(/\s+/g, "");
+
+      if (normalizedName.includes(normalizedQuery)) return true;
+
+      const nameInitials = getKoreanInitials(normalizedName);
+      if (queryInitials && nameInitials.startsWith(queryInitials)) return true;
+
+      return false;
+    });
+  };
+
+  const suggestions = getSuggestions();
+
+  const handleSelectSchool = (school) => {
+    setQuery(school.name);
+    setHighlightIndex(-1);
+    navigate("/select");
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "ArrowDown") {
+      if (suggestions.length === 0) return;
+      e.preventDefault();
+      const nextIndex =
+        highlightIndex + 1 >= suggestions.length ? 0 : highlightIndex + 1;
+      setHighlightIndex(nextIndex);
+      setQuery(suggestions[nextIndex].name);
+    } else if (e.key === "ArrowUp") {
+      if (suggestions.length === 0) return;
+      e.preventDefault();
+      const nextIndex =
+        highlightIndex <= 0 ? suggestions.length - 1 : highlightIndex - 1;
+      setHighlightIndex(nextIndex);
+      setQuery(suggestions[nextIndex].name);
+    } else if (e.key === "Enter") {
+      if (suggestions.length === 0) return;
+      e.preventDefault();
+      if (highlightIndex >= 0 && highlightIndex < suggestions.length) {
+        handleSelectSchool(suggestions[highlightIndex]);
+      } else {
+        handleSelectSchool(suggestions[0]);
+      }
+    }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[80vh] px-4">
-      {/* 로고 영역 */}
-      <div className="bg-blue-100 p-4 rounded-full mb-6">
-        <GraduationCap size={48} className="text-blue-600" />
-      </div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-2">어떤 학교 로드맵을 볼까요?</h1>
-      <p className="text-gray-500 mb-8">학교 이름을 검색해서 커리큘럼을 확인하세요.</p>
+    <main
+      style={{
+        minHeight: "80vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      {/* ===== 상단 헤더 영역 (스크린샷 느낌) ===== */}
+      <section
+        style={{
+          marginTop: 80,
+          marginBottom: 40,
+          width: "100%",
+          maxWidth: 720,
+        }}
+      >
+        {/* 아이콘 + 제목 */}
+        <div style={{ display: "flex", alignItems: "center", marginBottom: 12 }}>
+          <div
+            style={{
+              width: 40,
+              height: 40,
+              borderRadius: "999px",
+              backgroundColor: "#eff6ff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              marginRight: 10,
+              fontSize: 22,
+            }}
+          >
+            🎓
+          </div>
+          <h1
+            style={{
+              fontSize: 28,
+              fontWeight: 800,
+              color: "#111827",
+            }}
+          >
+            어떤 학교 로드맵을 확인해 볼까요?
+          </h1>
+        </div>
 
-      {/* 검색창 영역 */}
-      <div className="w-full max-w-md relative mb-6">
-        <Search className="absolute left-4 top-3.5 text-gray-400" size={20} />
-        <input 
-          type="text"
-          placeholder="학교 검색 (예: 한성대, 한국대)"
-          className="w-full pl-12 pr-4 py-3 border rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 outline-none transition"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
+        {/* 부제목 */}
+        <p
+          style={{
+            fontSize: 14,
+            color: "#6b7280",
+            marginLeft: 50, // 아이콘 밑으로 정렬되는 느낌
+            marginBottom: 24,
+          }}
+        >
+          학교 이름을 검색하고 커리큘럼 로드맵과 전공과목 시뮬레이션을 한눈에 확인해 보세요.
+        </p>
 
-      {/* 검색 결과 리스트 */}
-      <div className="w-full max-w-md space-y-3">
-        {filteredUnivs.length > 0 ? (
-          filteredUnivs.map((univ) => (
-            <button
-              key={univ.id}
-              onClick={() => handleSelect(univ)}
-              className="w-full flex items-center justify-between p-4 bg-white border rounded-xl hover:border-blue-500 hover:shadow-md transition group"
+        {/* 검색창 + 안내 문구 + 자동완성 */}
+        <div style={{ maxWidth: 640 }}>
+          <div className="search-box" style={{ marginBottom: 8 }}>
+            <div className="search-icon" />
+            <input
+              className="search-input"
+              type="text"
+              placeholder="학교 검색 (예: 한성대, 한국대)"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setHighlightIndex(-1);
+              }}
+              onKeyDown={handleKeyDown}
+            />
+          </div>
+
+          {/* 검색창 아래 안내 문구 */}
+          <div
+            style={{
+              textAlign: "center",
+              fontSize: 12,
+              color: "#9ca3af",
+              marginBottom: suggestions.length > 0 ? 4 : 0,
+            }}
+          >
+            학교 이름을 입력해 주세요.
+          </div>
+
+          {/* 자동완성 리스트 */}
+          {suggestions.length > 0 && (
+            <div className="autocomplete" style={{ marginTop: 4 }}>
+              {suggestions.map((school, idx) => (
+                <div
+                  key={school.id}
+                  className="autocomplete-item"
+                  style={{
+                    backgroundColor:
+                      idx === highlightIndex ? "#e5f0ff" : "white",
+                  }}
+                  onMouseDown={() => handleSelectSchool(school)}
+                  onMouseEnter={() => setHighlightIndex(idx)}
+                >
+                  {school.name}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* ===== 핵심 기능 3개 카드 (로드맵 / 시뮬레이션 / 매핑) ===== */}
+      <h2
+        className="section-title"
+        style={{
+          fontSize: 24,
+          marginBottom: 0,
+          textAlign: "center",
+        }}
+      >
+        핵심 기능
+      </h2>
+
+      <section style={{ width: "100%", maxWidth: 1100, marginBottom: 80 }}>
+        <div
+          className="features-card"
+          style={{
+            padding: "32px 40px",
+            display: "grid",
+            gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+            gap: 40,
+          }}
+        >
+          {/* 1. 인터랙티브 로드맵 */}
+          <div className="feature">
+            <div
+              className="feature-icon"
+              style={{ fontSize: 36, marginBottom: 16 }}
             >
-              <span className="font-bold text-lg text-gray-700 group-hover:text-blue-600">
-                {univ.name}
-              </span>
-              <ArrowRight className="text-gray-300 group-hover:text-blue-500" />
-            </button>
-          ))
-        ) : (
-          <p className="text-center text-gray-400 mt-4">검색 결과가 없습니다.</p>
-        )}
-      </div>
-    </div>
+              🗺️
+            </div>
+            <div
+              className="feature-title"
+              style={{ fontSize: 18, marginBottom: 10 }}
+            >
+              인터랙티브 로드맵
+            </div>
+            <div
+              className="feature-desc"
+              style={{ fontSize: 14, lineHeight: 1.6 }}
+            >
+              과목 간 연결 관계를 시각적으로 확인하고,
+              <br />
+              어떤 순서로 수강하면 좋을지 한눈에 확인할 수 있습니다.
+            </div>
+          </div>
+
+          {/* 2. 전공과목 시뮬레이션 */}
+          <div className="feature">
+            <div
+              className="feature-icon"
+              style={{ fontSize: 36, marginBottom: 16 }}
+            >
+              📊
+            </div>
+            <div
+              className="feature-title"
+              style={{ fontSize: 18, marginBottom: 10 }}
+            >
+              전공과목 시뮬레이션
+            </div>
+            <div
+              className="feature-desc"
+              style={{ fontSize: 14, lineHeight: 1.6 }}
+            >
+              수강한 전공과목을 선택해
+              <br />
+              전공 이수 현황과 남은 과목을 한눈에 확인할 수 있습니다.
+            </div>
+          </div>
+
+          {/* 3. 리소스 매핑 */}
+          <div className="feature">
+            <div
+              className="feature-icon"
+              style={{ fontSize: 36, marginBottom: 16 }}
+            >
+              🧩
+            </div>
+            <div
+              className="feature-title"
+              style={{ fontSize: 18, marginBottom: 10 }}
+            >
+              리소스 매핑
+            </div>
+            <div
+              className="feature-desc"
+              style={{ fontSize: 14, lineHeight: 1.6 }}
+            >
+              각 과목과 연계된 강의 자료와 참고 링크를 트랙별로 정리해,
+              <br />
+              필요한 학습 리소스를 빠르게 찾아볼 수 있습니다.
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 };
 
