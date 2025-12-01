@@ -21,13 +21,14 @@ function getKoreanInitials(str) {
   return result;
 }
 
-// ===== 학교 데이터 (한성대만) =====
+// ===== 학교 데이터 =====
 const SCHOOLS = [
   {
     id: "hansung",
     name: "한성대학교",
     department: "컴퓨터공학부",
   },
+   { id: "korea",  name: "한국대학교", department: "컴퓨터공학부" },
 ];
 
 function LandingPage({ onSelectSchool }) {

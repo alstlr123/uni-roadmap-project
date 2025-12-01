@@ -44,7 +44,8 @@ function SelectionPage({ selectedSchool, onResetSchool }) {
           <div
             className="detail-card detail-card-roadmap"
             style={{ textAlign: "center" }}   
-            onClick={() => navigate("/roadmap")}
+            onClick={() => navigate("/roadmap", { state: { universityId: selectedSchool.id } })
+  }
           >
             <div className="detail-card-emoji">🗺️</div>
             <div className="detail-card-title">커리큘럼 로드맵</div>
