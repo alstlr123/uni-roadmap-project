@@ -37,7 +37,6 @@ function LandingPage({ onSelectSchool }) {
   const [query, setQuery] = useState("");
   const [highlightIndex, setHighlightIndex] = useState(-1);
 
-  // 검색 제안 (App.js와 동일한 로직)
   const getSuggestions = () => {
     const trimmed = query.trim();
     if (!trimmed) return [];
