@@ -28,7 +28,7 @@ const SCHOOLS = [
     name: "한성대학교",
     department: "컴퓨터공학부",
   },
-   { id: "hanguk",  name: "한국대학교", department: "컴퓨터공학부" },
+   { id: "korea",  name: "한국대학교", department: "컴퓨터공학부" },
 ];
 
 function LandingPage({ onSelectSchool }) {
