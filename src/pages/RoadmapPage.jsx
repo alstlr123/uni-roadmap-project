@@ -16,7 +16,8 @@ import ELK from 'elkjs/lib/elk.bundled.js';
 const AppContext = React.createContext({
     universityData: { id: "hansung", name: "한성대학교" },
     selectedTrackId: "web",
-    navigateToHome: () => alert("뒤로가기/홈으로 이동 (Mock)"),
+    //navigateToHome: () => alert("뒤로가기/홈으로 이동 (Mock)"),
+    navigateToHome: () => window.location.href = '/'
 }); 
 
 
