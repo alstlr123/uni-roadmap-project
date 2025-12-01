@@ -52,7 +52,7 @@ function LandingPage({ onSelectSchool }) {
       if (normalizedName.includes(normalizedQuery)) return true;
 
       const nameInitials = getKoreanInitials(normalizedName);
-      if (queryInitials && nameInitials.includes(queryInitials)) return true;
+      if (queryInitials && nameInitials.startsWith(queryInitials)) return true;
 
 
       return false;
