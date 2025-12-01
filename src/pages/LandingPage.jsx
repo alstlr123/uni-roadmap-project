@@ -98,7 +98,7 @@ function LandingPage({ onSelectSchool }) {
       <section className="hero-section">
         <h1 className="hero-title">당신의 학교를 검색하세요</h1>
         <p className="hero-subtitle">
-          학교별 맞춤형 커리큘럼 로드맵과 진로 분석을 제공합니다.
+          학교별 맞춤형 커리큘럼 로드맵과 전공과목 시뮬레이션을 제공합니다.
         </p>
 
         <div className="search-wrapper">
@@ -158,9 +158,8 @@ function LandingPage({ onSelectSchool }) {
             <div className="feature-icon">📊</div>
             <div className="feature-title">전공과목 시뮬레이션</div>
             <div className="feature-desc">
-               수강한 전공과목을 선택해
-               
-                전공 이수 현황과 남은 과목을 한눈에 확인할 수 있습니다.
+               수강한 전공과목을 선택해 전공 이수 현황과
+               <br/>남은 과목을 한눈에 확인할 수 있습니다.
             </div>
           </div>
 
