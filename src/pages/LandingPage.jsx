@@ -52,7 +52,8 @@ function LandingPage({ onSelectSchool }) {
       if (normalizedName.includes(normalizedQuery)) return true;
 
       const nameInitials = getKoreanInitials(normalizedName);
-      if (queryInitials && nameInitials.startsWith(queryInitials)) return true;
+      if (queryInitials && nameInitials.includes(queryInitials)) return true;
+
 
       return false;
     });
@@ -74,14 +75,12 @@ function LandingPage({ onSelectSchool }) {
       const nextIndex =
         highlightIndex + 1 >= suggestions.length ? 0 : highlightIndex + 1;
       setHighlightIndex(nextIndex);
-      setQuery(suggestions[nextIndex].name);
     } else if (e.key === "ArrowUp") {
       if (suggestions.length === 0) return;
       e.preventDefault();
       const nextIndex =
         highlightIndex <= 0 ? suggestions.length - 1 : highlightIndex - 1;
       setHighlightIndex(nextIndex);
-      setQuery(suggestions[nextIndex].name);
     } else if (e.key === "Enter") {
       if (suggestions.length === 0) return;
       e.preventDefault();
