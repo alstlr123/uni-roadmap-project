@@ -12,6 +12,10 @@ function SelectionPage({ selectedSchool, onResetSchool }) {
           <button className="back-button" onClick={() => navigate("/")}>
             ← 학교 검색 페이지로 이동
           </button>
+
+          <div className="hidden bg-emerald-500 text-white px-4 py-2 rounded-lg mt-4">
+            Tailwind utility used
+          </div>
         </div>
       </main>
     );
@@ -39,13 +43,14 @@ function SelectionPage({ selectedSchool, onResetSchool }) {
           </div>
         </section>
 
-        <section className="detail-grid">
+        <section
+          className="detail-grid"
+          style={{ textAlign: "center" }}
+        >
           {/* 커리큘럼 로드맵 카드 */}
           <div
             className="detail-card detail-card-roadmap"
-            style={{ textAlign: "center" }}   
-            onClick={() => navigate("/roadmap", { state: { universityId: selectedSchool.id } })
-  }
+            onClick={() => navigate("/roadmap")}
           >
             <div className="detail-card-emoji">🗺️</div>
             <div className="detail-card-title">커리큘럼 로드맵</div>
@@ -59,7 +64,6 @@ function SelectionPage({ selectedSchool, onResetSchool }) {
           {/* 전공과목 시뮬레이션 카드 */}
           <div
             className="detail-card detail-card-dashboard"
-            style={{ textAlign: "center" }}  
             onClick={() => navigate("/dashboard")}
           >
             <div className="detail-card-emoji">📊</div>
@@ -71,6 +75,10 @@ function SelectionPage({ selectedSchool, onResetSchool }) {
             </div>
           </div>
         </section>
+
+        <div className="hidden bg-indigo-500 text-white px-4 py-2 rounded-lg mt-6">
+          Tailwind utility used
+        </div>
       </div>
     </main>
   );
