@@ -12,20 +12,20 @@ import 'reactflow/dist/style.css';
 import ELK from 'elkjs/lib/elk.bundled.js'; 
 
 // 이 파일은 Context를 사용하지만, 독립적으로 작동하기 위해 Mock으로 대체합니다.
-// 🚨 [Mock 수정]: Context를 비어있는 상태로 시뮬레이션합니다. 
-// 이 값을 통해 검색 결과가 없음을 표현하고, 하위 로직에서 안전하게 처리합니다.
+// 🚨 [핵심 수정]: LandingPage에서 "한국대학교"를 검색했다고 가정합니다.
 const AppContext = React.createContext({
-    // Context에서 넘어와야 할 실제 값들
-    universityData: null, // ⬅️ 검색 결과가 아직 없거나, LandingPage에서 넘어온 값
-    selectedTrackId: null, 
+    universityData: { id: "korea", name: "한국대학교" }, // ⬅️ Context에 담긴 검색 결과 (한국대로 설정)
+    selectedTrackId: "ai_track", // 한국대학교의 '인공지능 트랙'으로 초기화 가정
     navigateToHome: () => window.history.back(), 
-    setUniversityData: () => console.log("Mock Context Function Called"),
+    // setUniversityData 함수를 Mock으로 추가하여 오류 방지 및 상태 업데이트 시뮬레이션
+    setUniversityData: (data) => console.log(`Mock Context: University changed to ${data.name}`),
 }); 
 
 
 // =======================================================
 // [0. MOCK DATA - 사용자 제공 데이터 통합]
 // =======================================================
+
 const UNIVERSITIES = [
     {
         id: "hansung",
@@ -399,9 +399,14 @@ export default function RoadmapPage() {
     } = useContext(AppContext);
 
     // 1. 상태 설정
-    // 🚨 [핵심 수정]: Context에서 넘어온 uniData가 있으면 그 ID를 사용합니다. 없으면 INITIAL_UNIVERSITY_ID("hansung")를 사용합니다.
-    const [selectedUniversityId, setSelectedUniversityId] = useState(contextUniData?.id || INITIAL_UNIVERSITY_ID);
-    const [currentViewingTrackId, setCurrentViewingTrackId] = useState(contextTrackId || INITIAL_TRACK_ID); 
+    // Context에 값이 없으면 (검색 전) INITIAL_UNIVERSITY_ID(hansung)를 기본으로, 값이 있으면 그 검색 결과 ID를 사용합니다.
+    const initialUniId = contextUniData?.id || INITIAL_UNIVERSITY_ID;
+    const initialTrackId = contextUniData?.tracks?.length > 0 ? contextUniData.tracks[0].id : INITIAL_TRACK_ID;
+
+    // 🚨 [핵심 수정]: selectedUniversityId 상태는 Context에서 받은 ID로 초기화됩니다.
+    // 만약 Context에 korea가 있으면 selectedUniversityId는 'korea'가 됩니다.
+    const [selectedUniversityId, setSelectedUniversityId] = useState(initialUniId);
+    const [currentViewingTrackId, setCurrentViewingTrackId] = useState(contextTrackId || initialTrackId); 
     const [selectedCourseDetail, setSelectedCourseDetail] = useState(null);
 
     // 2. 현재 선택된 대학 및 트랙 계산
